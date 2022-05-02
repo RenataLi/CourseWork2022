@@ -1,0 +1,7 @@
+﻿namespace DefaultNamespace
+{
+    public interface IDamageable
+    { 
+        void ApplyDamage(int damage);
+    }
+}
