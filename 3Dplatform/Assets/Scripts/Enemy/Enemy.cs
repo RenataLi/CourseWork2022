@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private GameObject _bullet;
     [SerializeField] private GameObject _model;
     [SerializeField] private Transform _shootTransform;
+    [SerializeField] private Transform _eyeTransform;
     
     private float _currentTime;
     private EnemyUI _enemyUI;
@@ -54,7 +55,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (!_isFaceRight)
         {
             if (Vector3.Distance(pos, 
-                new Vector3(_startPosition.x - _positionRange.x, _startPosition.y, _startPosition.z)) > 0.2f)
+                new Vector3(_startPosition.x - _positionRange.x, _startPosition.y, _startPosition.z)) > 1f)
             {
                 _rigidbody.MovePosition(new Vector3(pos.x + (_moveSpeed * -_positionRange.x) *  Time.deltaTime, pos.y, pos.z));
             }
@@ -67,7 +68,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (_isFaceRight)
         {
             if (Vector3.Distance(pos, 
-                new Vector3(_startPosition.x + _positionRange.y, _startPosition.y, _startPosition.z)) > 0.2f)
+                new Vector3(_startPosition.x + _positionRange.y, _startPosition.y, _startPosition.z)) > 1f)
             {
                 _rigidbody.MovePosition(new Vector3(pos.x + (_moveSpeed * _positionRange.y) *  Time.deltaTime, pos.y, pos.z)) ;
             }
@@ -81,13 +82,16 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Flip()
     {
         _isFaceRight = !_isFaceRight;
-        _model.transform.localScale = new Vector3(_model.transform.localScale.x * -1,
-            _model.transform.localScale.y, _model.transform.localScale.z);
+        _model.transform.localEulerAngles = new Vector3(_model.transform.localEulerAngles.x,
+            _model.transform.localEulerAngles.y * -1, _model.transform.localEulerAngles.z);
+        
+        _shootTransform.transform.localEulerAngles = new Vector3(_shootTransform.transform.localEulerAngles.x,
+            _shootTransform.transform.localEulerAngles.y * -1, _shootTransform.transform.localEulerAngles.z);
     }
 
     private void SynchronizeDirection()
     {
-        _isFaceRight = _model.transform.localScale.x > 0;
+        _isFaceRight = _model.transform.rotation.y > 0; //_model.transform.localScale.x > 0;
     }
 
     public void ApplyDamage(int damage)
@@ -106,14 +110,17 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         RaycastHit hit;
         var direction = _isFaceRight ? Vector3.right : Vector3.left;
-        if (Physics.Raycast(transform.position, transform.TransformDirection(direction), out hit, _viewDistance))
+        if (Physics.Raycast(_eyeTransform.position, _eyeTransform.TransformDirection(direction), out hit, _viewDistance))
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(direction) * hit.distance, Color.yellow);
-            Shoot();
+            if (hit.collider.GetComponent<Player>())
+            {
+                Debug.DrawRay(_eyeTransform.position, _eyeTransform.TransformDirection(direction) * hit.distance, Color.yellow);
+                Shoot(); 
+            }
         }
         else
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(direction) * _viewDistance, Color.white);
+            Debug.DrawRay(_eyeTransform.position, _eyeTransform.TransformDirection(direction) * _viewDistance, Color.white);
         }
     }
 

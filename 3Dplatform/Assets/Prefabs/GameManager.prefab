@@ -46,9 +46,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startPosition: {fileID: 8852131552655163218}
-  _playerPrefab: {fileID: 500335297295669652, guid: 1aa27ecb9b3bfff44a6a55869bb7dedf,
+  _playerPrefab: {fileID: 515138227564101137, guid: 227caa833d778f04dbdf75d60f5f8cdf,
     type: 3}
-  _player: {fileID: 0}
+  _player: {fileID: 515138227564101142, guid: 227caa833d778f04dbdf75d60f5f8cdf, type: 3}
+  isPaused: 0
 --- !u!65 &8852131552627848628
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -114,10 +115,12 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -142,6 +145,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &8852131552655163219
 CapsuleCollider:
   m_ObjectHideFlags: 0

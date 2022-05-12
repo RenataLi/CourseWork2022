@@ -12,7 +12,9 @@ public class Player : MonoBehaviour, IDamageable, IHeal, IScorable
     [SerializeField] private float _jumpForce;    
     [SerializeField] private float _moveSpeed;
     [SerializeField] private bool _canJump;
-
+    [SerializeField] private LayerMask _layerGround;
+    private GameManager _gm;
+    
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private GameUi _ui;
 
@@ -27,23 +29,24 @@ public class Player : MonoBehaviour, IDamageable, IHeal, IScorable
         _health = _maxHealth;
         _rigidbody = GetComponent<Rigidbody>();
         _ui = FindObjectOfType<GameUi>();
+        _gm = FindObjectOfType<GameManager>();
 
         InitUserInterface();
     }
 
     private void Update()
     {
+        if (_gm.isPaused)
+        {
+            return;
+        }
+        
         Movement();
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Shoot();
         }
-    }
-
-    public int GetPlayerHealth()
-    {
-        return _health;
     }
 
     private void InitUserInterface()
@@ -57,10 +60,11 @@ public class Player : MonoBehaviour, IDamageable, IHeal, IScorable
         _health += value;
     }
     
-    public bool IsAlive()
+    private bool IsAlive()
     {
         return _health > 0;
     }
+    
     public void ApplyDamage(int damage)
     {
         ChangeHealth(-damage);
@@ -80,8 +84,7 @@ public class Player : MonoBehaviour, IDamageable, IHeal, IScorable
 
     private void Movement()
     {
-        _canJump = CanJump();
-        if (Input.GetKeyDown(KeyCode.W) && _canJump)
+        if (Input.GetKeyDown(KeyCode.W) && CanJump())
         {
             Jump();
         }
@@ -129,8 +132,6 @@ public class Player : MonoBehaviour, IDamageable, IHeal, IScorable
 
     private bool CanJump()
     {
-        RaycastHit hit;
-        var direction = Vector3.down;
-        return Physics.Raycast(_jumpTransform.position, transform.TransformDirection(direction), out hit, 0.1f);
+        return Physics.CheckSphere(_jumpTransform.position, .1f, _layerGround);
     }
 }
